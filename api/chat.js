@@ -12,8 +12,8 @@ const PAGE_NAMES = {
 };
 
 // ─── 2) Env vars & tuning constants ───────────────────────────────────────────
-const SUPA_URL = process.env.VITE_SUPABASE_URL;
-const SUPA_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // How many turns before we start summarizing…
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
   }
 
   // ─── 2) Create a Supabase client scoped to this user (for RLS!) ────────────
-  const supabase = createClient(SUPA_URL, SUPA_ANON_KEY, {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, {
     global: { headers: { Authorization: `Bearer ${jwt}` } },
   });
 
