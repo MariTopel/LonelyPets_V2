@@ -14,19 +14,18 @@ export default function ChatView({ user, pet, page: pageProp }) {
   const endRef = useRef();
   const location = useLocation();
 
-  // Derive the page key: use the prop if passed in, otherwise use React Router
+  // Derive the current page for inserts, but we won't filter by it on load
   const currentPage = pageProp || location.pathname;
 
-  // Load existing messages for this user & page
+  // Load all chat messages for this user once (global history)
   useEffect(() => {
     if (!user?.id) return;
     (async () => {
-      console.log("🔍 Loading chat for", user.id, "on", currentPage);
+      console.log("🔍 Loading global chat for", user.id);
       const { data, error } = await supabase
         .from("chat_messages")
         .select("role, text")
         .eq("user_id", user.id)
-        .eq("page", currentPage)
         .order("created_at", { ascending: true });
 
       if (error) {
@@ -35,7 +34,7 @@ export default function ChatView({ user, pet, page: pageProp }) {
         setMessages(data || []);
       }
     })();
-  }, [user?.id, currentPage]);
+  }, [user?.id]);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -50,7 +49,7 @@ export default function ChatView({ user, pet, page: pageProp }) {
     setInput("");
     setSending(true);
 
-    // Insert user message
+    // Insert the user's message (still record page for context)
     await supabase.from("chat_messages").insert({
       user_id: user.id,
       role: "user",
@@ -58,10 +57,10 @@ export default function ChatView({ user, pet, page: pageProp }) {
       page: currentPage,
     });
 
-    const newMessage = { role: "user", text };
-    setMessages((prev) => [...prev, newMessage].slice(-50));
+    // Update local state
+    setMessages((prev) => [...prev, { role: "user", text }]);
 
-    // Generate AI reply with error handling
+    // Call the AI
     let aiReply = "Sorry, I couldn't think of a reply right now.";
     try {
       aiReply = await generatePetReply(text, currentPage, user.id, pet);
@@ -69,7 +68,7 @@ export default function ChatView({ user, pet, page: pageProp }) {
       console.error("generatePetReply failed", err);
     }
 
-    // Insert AI reply
+    // Insert AI's reply
     await supabase.from("chat_messages").insert({
       user_id: user.id,
       role: "assistant",
@@ -77,9 +76,8 @@ export default function ChatView({ user, pet, page: pageProp }) {
       page: currentPage,
     });
 
-    setMessages((prev) =>
-      [...prev, { role: "assistant", text: aiReply }].slice(-50)
-    );
+    // Update local state with AI reply
+    setMessages((prev) => [...prev, { role: "assistant", text: aiReply }]);
     setSending(false);
   }
 
@@ -88,26 +86,11 @@ export default function ChatView({ user, pet, page: pageProp }) {
       <h2>Chat with your pet</h2>
 
       <div id="chat-messages">
-        {messages.map((m, i) => {
-          const isUser = m.role === "user";
-          const isPet = m.role === "assistant";
-          const extraClass =
-            isUser && m === messages[messages.length - 2]
-              ? "user-fade-in"
-              : isPet && i === messages.length - 1
-              ? "fade-in"
-              : "";
-          const key = `${m.role}-${i}-${m.text.slice(0, 10)}`;
-
-          return (
-            <div
-              key={key}
-              className={`chat-bubble ${m.role}-bubble ${extraClass}`}
-            >
-              <strong>{isUser ? "You" : "Pet"}:</strong> {m.text}
-            </div>
-          );
-        })}
+        {messages.map((m, i) => (
+          <div key={i} className={`chat-bubble ${m.role}-bubble`}>
+            <strong>{m.role === "user" ? "You" : "Pet"}:</strong> {m.text}
+          </div>
+        ))}
         <div ref={endRef} />
       </div>
 
