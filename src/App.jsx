@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 
-// ① Import your AuthForm
+// Import your AuthForm
 import AuthForm from "./components/AuthForm.jsx";
 
 import { Home } from "./pages/Home.jsx";
@@ -34,11 +34,30 @@ export default function App() {
     });
   };
 
-  const handlePetSave = (petData) => {
-    setPet(petData);
-  };
+  async function handlePetSave(petData) {
+    if (!user?.id) return;
 
-  // ② If there's no authenticated user, show the AuthForm
+    // write or update the single pets row for this user
+    const { error } = await supabase.from("pets").upsert(
+      {
+        user_id: user.id,
+        type: petData.type,
+        name: petData.name,
+        personality: petData.personality,
+      },
+      { onConflict: "user_id" }
+    );
+
+    if (error) {
+      console.error("Failed to save pet:", error);
+      return;
+    }
+
+    // now update local state
+    setPet(petData);
+  }
+
+  // If there's no authenticated user, show the AuthForm
   if (!user) {
     return <AuthForm onSuccess={handleAuthSuccess} />;
   }
