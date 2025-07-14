@@ -37,23 +37,39 @@ export default function App() {
   async function handlePetSave(petData) {
     if (!user?.id) return;
 
-    // write or update the single pets row for this user
-    const { error } = await supabase.from("pets").upsert(
-      {
-        user_id: user.id,
-        type: petData.type,
-        name: petData.name,
-        personality: petData.personality,
-      },
-      { onConflict: "user_id" }
-    );
+    // 1) Try fetching an existing row
+    const { data: existing, error: fetchErr } = await supabase
+      .from("pets")
+      .select("id")
+      .eq("user_id", user.id)
+      .single();
 
-    if (error) {
-      console.error("Failed to save pet:", error);
+    if (fetchErr && fetchErr.code !== "PGRST116") {
+      console.error("Fetch pet error:", fetchErr);
       return;
     }
 
-    // now update local state
+    if (existing) {
+      // 2a) Row exists → update it
+      const { error: updateErr } = await supabase
+        .from("pets")
+        .update({
+          type: petData.type,
+          name: petData.name,
+          personality: petData.personality,
+        })
+        .eq("id", existing.id);
+      if (updateErr) console.error("Update pet error:", updateErr);
+    } else {
+      // 2b) No row → insert new
+      const { error: insertErr } = await supabase.from("pets").insert({
+        user_id: user.id,
+        ...petData,
+      });
+      if (insertErr) console.error("Insert pet error:", insertErr);
+    }
+
+    // 3) Reflect in state
     setPet(petData);
   }
 
