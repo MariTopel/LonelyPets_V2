@@ -7,6 +7,7 @@ import { supabase } from "./supabaseClient";
 import AuthForm from "./components/AuthForm.jsx";
 
 import { Home } from "./pages/Home.jsx";
+import { Profile } from "./pages/Profile.jsx";
 import { City } from "./pages/City.jsx";
 import { Desert } from "./pages/Desert.jsx";
 import { Coast } from "./pages/Coast.jsx";
@@ -81,8 +82,9 @@ export default function App() {
   return (
     <Router>
       <nav>
-        <Link to="/">Home</Link> | <Link to="/city">Kingdom of Archaides</Link>{" "}
-        | <Link to="/desert">Snake Sands</Link> |{" "}
+        <Link to="/">Home</Link> | <Link to="/profile">Profile</Link> |{" "}
+        <Link to="/city">Kingdom of Archaides</Link> |{" "}
+        <Link to="/desert">Snake Sands</Link> |{" "}
         <Link to="/coast">Eldritch Coast</Link>
       </nav>
 
@@ -91,6 +93,7 @@ export default function App() {
 
       <Routes>
         <Route path="/" element={<Home pet={pet} onSave={handlePetSave} />} />
+        <Route path="/profile" element={<Profile user={user} />} />
         <Route path="/city" element={<City />} />
         <Route path="/desert" element={<Desert />} />
         <Route path="/coast" element={<Coast />} />
