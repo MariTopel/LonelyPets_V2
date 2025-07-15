@@ -44,6 +44,7 @@ export default function App() {
         .select("type, name, personality")
         .eq("user_id", user.id)
         .maybeSingle();
+      console.log("pet load:", { data, error, status });
       if (error && error.code !== "PGRST116") {
         console.error("Error loading pet:", error);
         setPet(null); // treat error as “no pet”
