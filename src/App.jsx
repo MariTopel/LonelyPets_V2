@@ -1,11 +1,9 @@
 // src/App.jsx
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 
-// Import your AuthForm
 import AuthForm from "./components/AuthForm.jsx";
-
 import { Home } from "./pages/Home.jsx";
 import { Profile } from "./pages/Profile.jsx";
 import { City } from "./pages/City.jsx";
@@ -15,52 +13,68 @@ import ChatView from "./components/ChatView.jsx";
 
 export default function App() {
   const [user, setUser] = useState(null);
-  //undefined = "loading", null = "no pet yet", object = "pet exists"
+  // undefined = loading (only after login), null = no pet yet, object = pet exists
   const [pet, setPet] = useState(undefined);
+  const [authOpen, setAuthOpen] = useState(false);
 
-  //fetch initial session and listen for future auth changes
+  // 1) Auth listener & initial session
   useEffect(() => {
-    async function initAuth() {
+    async function init() {
       const {
         data: { session },
       } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
     }
-    initAuth();
-
+    init();
     const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
     });
-
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // Load pet from DB when user logs in
+  // 2) Load pet only when user logs in
   useEffect(() => {
     if (!user?.id) return;
     (async () => {
       const { data, error } = await supabase
         .from("pets")
-        .select("type, name, personality")
+        .select("type,name,personality")
         .eq("user_id", user.id)
         .maybeSingle();
-      console.log("pet load:", { data, error, status });
       if (error && error.code !== "PGRST116") {
         console.error("Error loading pet:", error);
-        setPet(null); // treat error as “no pet”
+        setPet(null);
       } else {
         setPet(data || null);
       }
     })();
   }, [user?.id]);
 
-  // Called after a successful login/sign-up
-  const handleAuthSuccess = () => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
-    });
-  };
+  // 3) Handlers to open/close auth modal
+  function openAuth() {
+    setAuthOpen(true);
+  }
+  function closeAuth() {
+    setAuthOpen(false);
+  }
 
+  // 4) After successful login/sign-up
+  async function handleAuthSuccess() {
+    closeAuth();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    setUser(session?.user ?? null);
+  }
+
+  // 5) Sign out
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    setUser(null);
+    setPet(undefined);
+  }
+
+  // 6) Save new pet (insert only once)
   async function handlePetSave(petData) {
     if (!user?.id) return;
     const { error } = await supabase
@@ -73,40 +87,42 @@ export default function App() {
     setPet(petData);
   }
 
-  //sign the user out and clear local state
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    setUser(null);
-    setPet(undefined);
-  }
-
-  // If there's no authenticated user, show the AuthForm
-  if (!user) {
-    return <AuthForm onSuccess={handleAuthSuccess} />;
-  }
-
-  if (pet === undefined) {
-    return <div>Loading your pet…</div>;
-  }
-
   return (
     <Router>
-      <nav style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <Link to="/">Home</Link> |<Link to="/profile">Profile</Link> |{" "}
-        <Link to="/city">Kingdom of Archaides</Link> |{" "}
-        <Link to="/desert">Snake Sands</Link> |{" "}
-        <Link to="/coast">Eldritch Coast</Link>
-        {/** only shows the sign out button when user is loggen in */}
-        <button onClick={handleSignOut} style={{ marginLeft: "auto" }}>
-          Sign Out
-        </button>
+      <nav style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+        <Link to="/">Home</Link>
+        <Link to="/profile">Profile</Link>
+        <Link to="/city">City</Link>
+        <Link to="/desert">Desert</Link>
+        <Link to="/coast">Coast</Link>
+
+        {user ? (
+          <button onClick={handleSignOut} style={{ marginLeft: "auto" }}>
+            Sign Out
+          </button>
+        ) : (
+          <button onClick={openAuth} style={{ marginLeft: "auto" }}>
+            Login
+          </button>
+        )}
       </nav>
 
-      {/* Show chat only once the user and pet are set */}
+      {/* Auth modal */}
+      {authOpen && <AuthForm onSuccess={handleAuthSuccess} />}
+
+      {/* Only show chat once user AND pet exist */}
       {user && pet && <ChatView user={user} pet={pet} />}
 
+      {/* Show loading if user is logged in but pet not yet fetched */}
+      {user && pet === undefined && <div>Loading your pet…</div>}
+
       <Routes>
-        <Route path="/" element={<Home pet={pet} onSave={handlePetSave} />} />
+        <Route
+          path="/"
+          element={
+            <Home pet={pet} onSave={handlePetSave} openAuth={openAuth} />
+          }
+        />
         <Route path="/profile" element={<Profile user={user} />} />
         <Route path="/city" element={<City />} />
         <Route path="/desert" element={<Desert />} />
