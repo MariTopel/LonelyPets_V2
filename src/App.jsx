@@ -73,6 +73,13 @@ export default function App() {
     setPet(petData);
   }
 
+  //sign the user out and clear local state
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    setUser(null);
+    setPet(undefined);
+  }
+
   // If there's no authenticated user, show the AuthForm
   if (!user) {
     return <AuthForm onSuccess={handleAuthSuccess} />;
@@ -84,11 +91,15 @@ export default function App() {
 
   return (
     <Router>
-      <nav>
-        <Link to="/">Home</Link> | <Link to="/profile">Profile</Link> |{" "}
+      <nav style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <Link to="/">Home</Link> |<Link to="/profile">Profile</Link> |{" "}
         <Link to="/city">Kingdom of Archaides</Link> |{" "}
         <Link to="/desert">Snake Sands</Link> |{" "}
         <Link to="/coast">Eldritch Coast</Link>
+        {/** only shows the sign out button when user is loggen in */}
+        <button onClick={handleSignOut} style={{ marginLeft: "auto" }}>
+          Sign Out
+        </button>
       </nav>
 
       {/* Show chat only once the user and pet are set */}
