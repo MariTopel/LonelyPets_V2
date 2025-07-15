@@ -2,6 +2,21 @@
 import React from "react";
 import PetForm from "../components/PetForm.jsx";
 
+//pet pictures
+import dragonImg from "../assets/PetPics/dragon.png";
+import catImg from "../assets/PetPics/cat.png";
+import dogImg from "../assets/PetPics/dog.png";
+import plantImg from "../assets/PetPics/plant.png";
+import space_octopusImg from "../assets/PetPics/space-octopus.png";
+
+const PET_IMAGES = {
+  dragon: dragonImg,
+  cat: catImg,
+  dog: dogImg,
+  plant: plantImg,
+  "space octopus": space_octopusImg,
+};
+
 export function Home({ user, pet, onSave, openAuth }) {
   // 1) Not logged in → prompt them to log in
   if (!user) {
@@ -35,13 +50,24 @@ export function Home({ user, pet, onSave, openAuth }) {
   }
 
   // 4) Logged in and pet exists → show summary
+
+  const imgSrc = PET_IMAGES[pet.type];
   return (
     <div className="home-page">
       <h2>Your Pet</h2>
-      <p>
-        You have a <strong>{pet.type}</strong> named <strong>{pet.name}</strong>{" "}
-        ({pet.personality}).
-      </p>
+      <div classname="pet-summary">
+        {imgSrc && (
+          <img
+            src={imgSrc}
+            alt={`${pet.name} the ${pet.type}`}
+            className="pet-avatar"
+          />
+        )}
+        <p>
+          You have a <strong>{pet.type}</strong> named{" "}
+          <strong>{pet.name}</strong> ({pet.personality}).
+        </p>
+      </div>
       <p>Navigate to the map pages above or start a conversation below!</p>
     </div>
   );

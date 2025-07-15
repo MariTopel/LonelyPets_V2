@@ -21,7 +21,6 @@ export default function ChatView({ user, pet, page: pageProp }) {
   useEffect(() => {
     if (!user?.id) return;
     (async () => {
-      console.log("🔍 Loading global chat for", user.id);
       const { data, error } = await supabase
         .from("chat_messages")
         .select("role, text")
@@ -98,6 +97,12 @@ export default function ChatView({ user, pet, page: pageProp }) {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !sending) {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
           placeholder="Type a message…"
           disabled={sending}
         />

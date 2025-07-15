@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { supabase } from "./supabaseClient";
+import "./App.css";
 
 import AuthForm from "./components/AuthForm.jsx";
 import { Home } from "./pages/Home.jsx";
@@ -110,9 +111,6 @@ export default function App() {
       {/* Auth modal */}
       {authOpen && <AuthForm onSuccess={handleAuthSuccess} />}
 
-      {/* Only show chat once user AND pet exist */}
-      {user && pet && <ChatView user={user} pet={pet} />}
-
       {/* Show loading if user is logged in but pet not yet fetched */}
       {user && pet === undefined && <div>Loading your pet…</div>}
 
@@ -133,6 +131,8 @@ export default function App() {
         <Route path="/desert" element={<Desert />} />
         <Route path="/coast" element={<Coast />} />
       </Routes>
+      {/* Only show chat once user AND pet exist */}
+      {user && pet && <ChatView user={user} pet={pet} />}
     </Router>
   );
 }
