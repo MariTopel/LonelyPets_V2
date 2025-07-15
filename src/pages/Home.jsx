@@ -1,26 +1,20 @@
 // src/pages/Home.jsx
-import { useState } from "react";
+// src/pages/Home.jsx
+import React from "react";
 import PetForm from "../components/PetForm.jsx";
 
 export function Home({ pet, onSave }) {
-  // keep a local pet so form unmounts after save
-  const [localPet, setLocalPet] = useState(pet);
-
-  const handleSave = (petData) => {
-    setLocalPet(petData);
-    onSave(petData); // this must be defined by App.jsx
-  };
-
   return (
     <div className="home-page">
       <h2>Welcome to Pet AI</h2>
-      {!localPet ? (
-        // Pass the correctly named prop
-        <PetForm onSave={handleSave} />
+      {pet === null ? (
+        // only show form if DB says “no pet yet”
+        <PetForm onSave={onSave} />
       ) : (
+        // once pet exists, show summary and never show form again
         <p>
-          You have a {localPet.type} named <strong>{localPet.name}</strong> (
-          {localPet.personality}).
+          You have a {pet.type} named <strong>{pet.name}</strong> (
+          {pet.personality}).
         </p>
       )}
     </div>
