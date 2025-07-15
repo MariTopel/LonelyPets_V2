@@ -120,7 +120,12 @@ export default function App() {
         <Route
           path="/"
           element={
-            <Home pet={pet} onSave={handlePetSave} openAuth={openAuth} />
+            <Home
+              user={user}
+              pet={pet}
+              onSave={handlePetSave}
+              openAuth={openAuth}
+            />
           }
         />
         <Route path="/profile" element={<Profile user={user} />} />
