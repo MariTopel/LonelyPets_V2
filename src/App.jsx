@@ -18,7 +18,24 @@ export default function App() {
   //undefined = "loading", null = "no pet yet", object = "pet exists"
   const [pet, setPet] = useState(undefined);
 
-  // Listen for Supabase auth state changes
+  //fetch initial session and listen for future auth changes
+  useEffect(() => {
+    async function initAuth() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+    }
+    initAuth();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  // Load pet from DB when user logs in
   useEffect(() => {
     if (!user?.id) return;
     (async () => {
