@@ -63,16 +63,17 @@ export function ChatProvider({ user, children }) {
     }
 
     // insert AI reply
-    await supabase.from("chat_messages").insert({
-      user_id: user.id,
-      role: "assistant",
-      text: reply,
-      page,
-    });
-    setMessages((prev) => {
-      const next = [...prev, { role: "assistant", text: reply }];
-      return next.slice(-MAX_MESSAGES);
-    });
+    //await supabase.from("chat_messages").insert({
+    //user_id: user.id,
+    //role: "assistant",
+    //text: reply,
+    //page,
+    //});
+    //setMessages((prev) => {
+    //const next = [...prev, { role: "assistant", text: reply }];
+    //return next.slice(-MAX_MESSAGES);
+    //});
+    setMessages((m) => [...m, { role: "assistant", text: reply }]);
 
     setSending(false);
   }
