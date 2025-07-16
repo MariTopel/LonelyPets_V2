@@ -63,8 +63,8 @@ export function City() {
         className="hotspot"
         style={{
           ...styles.hotspot,
-          top: "42%",
-          left: "2%",
+          top: "11%",
+          left: "63%",
           width: "21%",
           height: "38%",
         }}
