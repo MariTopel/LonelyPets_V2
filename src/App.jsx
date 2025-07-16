@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { supabase } from "./supabaseClient";
+import { ChatProvider } from "./contexts/ChatContext.jsx";
 
 import Header from "./components/Header.jsx";
 import AuthForm from "./components/AuthForm.jsx";
@@ -93,29 +94,31 @@ export default function App() {
       {/* Auth modal overlay */}
       {authOpen && <AuthForm onSuccess={handleAuthSuccess} />}
 
-      {/* Page routes */}
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Home
-              user={user}
-              pet={pet}
-              onSave={handlePetSave}
-              openAuth={openAuth}
-            />
-          }
-        />
-        <Route path="/profile" element={<Profile user={user} />} />
-        <Route path="/city" element={<City />} />
-        <Route path="/desert" element={<Desert />} />
-        <Route path="/coast" element={<Coast />} />
-      </Routes>
+      <ChatProvider user={user}>
+        {/* Page routes */}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                user={user}
+                pet={pet}
+                onSave={handlePetSave}
+                openAuth={openAuth}
+              />
+            }
+          />
+          <Route path="/profile" element={<Profile user={user} />} />
+          <Route path="/city" element={<City />} />
+          <Route path="/desert" element={<Desert />} />
+          <Route path="/coast" element={<Coast />} />
+        </Routes>
 
-      {/* Chat appears below the routed content */}
-      {user && pet && <ChatView user={user} pet={pet} />}
-      {/* Loading indicator when pet is fetching */}
-      {user && pet === undefined && <div>Loading your pet…</div>}
+        {/* Chat appears below the routed content */}
+        {user && pet && <ChatView user={user} pet={pet} />}
+        {/* Loading indicator when pet is fetching */}
+        {user && pet === undefined && <div>Loading your pet…</div>}
+      </ChatProvider>
     </Router>
   );
 }
