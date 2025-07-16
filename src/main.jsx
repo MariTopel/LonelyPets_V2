@@ -11,8 +11,6 @@ const root = createRoot(container);
 
 root.render(
   <StrictMode>
-    <ChatProvider>
-      <App />
-    </ChatProvider>
+    <App />
   </StrictMode>
 );

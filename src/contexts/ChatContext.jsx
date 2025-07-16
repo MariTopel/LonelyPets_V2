@@ -73,6 +73,8 @@ export function ChatProvider({ user, children }) {
     //const next = [...prev, { role: "assistant", text: reply }];
     //return next.slice(-MAX_MESSAGES);
     //});
+
+    //changed to this in order to prevent double upload of pet reply to database, causing double messagr from pet on reload.
     setMessages((m) => [...m, { role: "assistant", text: reply }]);
 
     setSending(false);
