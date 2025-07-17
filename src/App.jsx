@@ -9,8 +9,8 @@ import AuthForm from "./components/AuthForm.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Profile } from "./pages/Profile.jsx";
 import { City } from "./pages/city/City.jsx";
-import { Desert } from "./pages/Desert.jsx";
-import { Coast } from "./pages/Coast.jsx";
+import { Desert } from "./pages/desert/Desert.jsx";
+import { Coast } from "./pages/coast/Coast.jsx";
 import { Pub } from "./pages/city/Pub.jsx";
 import ChatView from "./components/ChatView.jsx";
 
