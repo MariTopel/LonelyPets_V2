@@ -1,8 +1,17 @@
 // src/pages/Pub.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import pub from "../../assets/UI/city/pub.png";
+import { useChat } from "../../contexts/ChatContext"; // enables chat prompt on load
 
-export function Pub() {
+export default function Pub() {
+  const { sendMessage } = useChat();
+
+  useEffect(() => {
+    sendMessage(
+      "The user has arrived at the pub. It feels warm and lively inside. You want to talk to everyone and learn about them."
+    );
+  }, []);
+
   return (
     <div className="page-content" style={styles.container}>
       <img src={pub} alt="The drunken pub" style={styles.image} />
@@ -34,5 +43,11 @@ const styles = {
     fontFamily: "Cormorant Garamond, serif",
     color: "#3e2f1c",
     lineHeight: 1.5,
+  },
+  image: {
+    width: "100%",
+    height: "auto",
+    borderRadius: "12px",
+    marginBottom: "1rem",
   },
 };
