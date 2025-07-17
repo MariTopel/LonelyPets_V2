@@ -2,8 +2,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import cityMap from "../../assets/UI/city/city-map.png"; // adjust path as needed
+import { useEffect } from "react";
+import { useChat } from "../../contexts/ChatContext";
 
 export function City() {
+  const { sendSystemMessage } = useChat();
+
+  useEffect(() => {
+    sendSystemMessage(
+      "The user has arrived in the great city of Archadeus. It is colorful here and there are many places to see. There is a shrine, a pub, a shop, a castle, and an archery. There are many different kinds of magical creatures here from all over the world."
+    );
+  }, []);
+
   return (
     <div style={styles.container}>
       <img
