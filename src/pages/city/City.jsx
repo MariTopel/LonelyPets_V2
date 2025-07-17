@@ -1,7 +1,7 @@
 // src/pages/City.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import cityMap from "../assets/UI/city-map.png"; // adjust path as needed
+import cityMap from "../../assets/UI/city/city-map.png"; // adjust path as needed
 
 export function City() {
   return (

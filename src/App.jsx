@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { ChatProvider } from "./contexts/ChatContext.jsx";
 
@@ -8,17 +8,18 @@ import Header from "./components/Header.jsx";
 import AuthForm from "./components/AuthForm.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Profile } from "./pages/Profile.jsx";
-import { City } from "./pages/City.jsx";
+import { City } from "./pages/city/City.jsx";
 import { Desert } from "./pages/Desert.jsx";
 import { Coast } from "./pages/Coast.jsx";
+import { Pub } from "./pages/city/Pub.jsx";
 import ChatView from "./components/ChatView.jsx";
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [pet, setPet] = useState(undefined); // undefined: loading, null: no pet, object: has pet
+  const [pet, setPet] = useState(undefined);
   const [authOpen, setAuthOpen] = useState(false);
 
-  // Auth initialization and listener
+  // 1) Auth initialization
   useEffect(() => {
     async function init() {
       const {
@@ -33,13 +34,13 @@ export default function App() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // Load pet when user logs in
+  // 2) Load pet
   useEffect(() => {
     if (!user?.id) return;
     (async () => {
       const { data, error } = await supabase
         .from("pets")
-        .select("type, name, personality")
+        .select("type,name,personality")
         .eq("user_id", user.id)
         .maybeSingle();
       if (error && error.code !== "PGRST116") {
@@ -51,7 +52,7 @@ export default function App() {
     })();
   }, [user?.id]);
 
-  // Auth form control
+  // Auth controls
   function openAuth() {
     setAuthOpen(true);
   }
@@ -87,38 +88,35 @@ export default function App() {
   }
 
   return (
-    <Router>
-      {/* Site header */}
+    <ChatProvider user={user}>
       <Header user={user} openAuth={openAuth} handleSignOut={handleSignOut} />
 
-      {/* Auth modal overlay */}
+      {/* Routes */}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              user={user}
+              pet={pet}
+              onSave={handlePetSave}
+              openAuth={openAuth}
+            />
+          }
+        />
+        <Route path="/profile" element={<Profile user={user} />} />
+        <Route path="/city" element={<City />} />
+        <Route path="/pub" element={<Pub />} />
+        <Route path="/desert" element={<Desert />} />
+        <Route path="/coast" element={<Coast />} />
+      </Routes>
+
+      {/* Auth Modal */}
       {authOpen && <AuthForm onSuccess={handleAuthSuccess} />}
 
-      <ChatProvider user={user}>
-        {/* Page routes */}
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                user={user}
-                pet={pet}
-                onSave={handlePetSave}
-                openAuth={openAuth}
-              />
-            }
-          />
-          <Route path="/profile" element={<Profile user={user} />} />
-          <Route path="/city" element={<City />} />
-          <Route path="/desert" element={<Desert />} />
-          <Route path="/coast" element={<Coast />} />
-        </Routes>
-
-        {/* Chat appears below the routed content */}
-        {user && pet && <ChatView user={user} pet={pet} />}
-        {/* Loading indicator when pet is fetching */}
-        {user && pet === undefined && <div>Loading your pet…</div>}
-      </ChatProvider>
-    </Router>
+      {/* Chat */}
+      {user && pet && <ChatView user={user} pet={pet} />}
+      {user && pet === undefined && <div>Loading your pet…</div>}
+    </ChatProvider>
   );
 }
