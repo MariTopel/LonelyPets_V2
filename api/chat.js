@@ -1,8 +1,8 @@
 // src/api/chat.js
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
-import { PAGE_NAMES, PAGE_DESCRIPTIONS } from "../config/pageData.js";
-import { PET_DETAILS } from "../config/petData.js";
+import { PAGE_NAMES, PAGE_DESCRIPTIONS } from "../src/config/pageData.js";
+import { PET_DETAILS } from "../src/config/petData.js";
 
 // ─── 2) Env vars & tuning constants ───────────────────────────────────────────
 const SUPABASE_URL = process.env.SUPABASE_URL;
