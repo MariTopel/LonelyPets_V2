@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { ChatProvider } from "./contexts/ChatContext.jsx";
 
@@ -18,6 +18,21 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [pet, setPet] = useState(undefined);
   const [authOpen, setAuthOpen] = useState(false);
+
+  // Routing location
+  const location = useLocation();
+
+  // Map short routes to internal context paths for AI
+  const PAGE_REMAP = {
+    "/pub": "/city/pub",
+    "/shop": "/city/shop",
+    "/archery": "/city/archery",
+    "/castle": "/city/castle",
+    "/market": "/desert/market",
+    // Add more remaps as needed
+  };
+
+  const currentPage = PAGE_REMAP[location.pathname] || location.pathname;
 
   // 1) Auth initialization
   useEffect(() => {
@@ -88,7 +103,7 @@ export default function App() {
   }
 
   return (
-    <ChatProvider user={user}>
+    <ChatProvider user={user} pet={pet} currentPage={currentPage}>
       <Header user={user} openAuth={openAuth} handleSignOut={handleSignOut} />
 
       {/* Routes */}

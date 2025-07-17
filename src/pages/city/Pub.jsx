@@ -4,10 +4,10 @@ import pub from "../../assets/UI/city/pub.png";
 import { useChat } from "../../contexts/ChatContext"; // enables chat prompt on load
 
 export default function Pub() {
-  const { sendMessage } = useChat();
+  const { sendSystemMessage } = useChat();
 
   useEffect(() => {
-    sendMessage(
+    sendSystemMessage(
       "The user has arrived at the pub. It feels warm and lively inside. You want to talk to everyone and learn about them."
     );
   }, []);

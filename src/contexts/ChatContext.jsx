@@ -1,17 +1,16 @@
-// src/contexts/ChatContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { generatePetReply } from "../utils/generatePetReply";
 
 const ChatContext = createContext();
 
-export function ChatProvider({ user, children }) {
+export function ChatProvider({ user, pet, currentPage, children }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const MAX_MESSAGES = 50;
 
-  // load existing chat for this user (only last MAX_MESSAGES)
+  // Load existing messages
   useEffect(() => {
     if (!user?.id) {
       setMessages([]);
@@ -26,34 +25,31 @@ export function ChatProvider({ user, children }) {
       if (error) {
         console.error("Chat load error:", error);
       } else {
-        // keep only the last MAX_MESSAGES
         setMessages(data.slice(-MAX_MESSAGES));
       }
     })();
   }, [user?.id]);
 
-  // send a message + get AI reply
+  // Standard user message
   async function sendMessage(text, page, pet) {
     const trimmed = text.trim();
     if (!trimmed || sending || !user?.id) return;
 
-    // clear input and start sending
     setInput("");
     setSending(true);
 
-    // insert user message
     await supabase.from("chat_messages").insert({
       user_id: user.id,
       role: "user",
       text: trimmed,
       page,
     });
+
     setMessages((prev) => {
       const next = [...prev, { role: "user", text: trimmed }];
       return next.slice(-MAX_MESSAGES);
     });
 
-    // generate AI reply
     let reply = "🧐 Thinking…";
     try {
       reply = await generatePetReply(trimmed, page, user.id, pet);
@@ -62,27 +58,41 @@ export function ChatProvider({ user, children }) {
       reply = "Sorry, I couldn't think of a reply right now.";
     }
 
-    // insert AI reply
-    //await supabase.from("chat_messages").insert({
-    //user_id: user.id,
-    //role: "assistant",
-    //text: reply,
-    //page,
-    //});
-    //setMessages((prev) => {
-    //const next = [...prev, { role: "assistant", text: reply }];
-    //return next.slice(-MAX_MESSAGES);
-    //});
-
-    //changed to this in order to prevent double upload of pet reply to database, causing double messagr from pet on reload.
     setMessages((m) => [...m, { role: "assistant", text: reply }]);
-
     setSending(false);
+  }
+
+  // System-triggered message (e.g., entering a page)
+  async function sendSystemMessage(content) {
+    try {
+      if (!user?.id || !pet || !currentPage) {
+        console.warn("Missing context for system message.");
+        return;
+      }
+
+      const reply = await generatePetReply(
+        [{ role: "system", content }],
+        user,
+        pet,
+        currentPage
+      );
+
+      setMessages((prev) => [...prev, { role: "assistant", text: reply }]);
+    } catch (err) {
+      console.error("System message failed:", err);
+    }
   }
 
   return (
     <ChatContext.Provider
-      value={{ messages, input, setInput, sendMessage, sending }}
+      value={{
+        messages,
+        input,
+        setInput,
+        sendMessage,
+        sendSystemMessage,
+        sending,
+      }}
     >
       {children}
     </ChatContext.Provider>
