@@ -63,26 +63,22 @@ export function ChatProvider({ user, pet, currentPage, children }) {
   }
 
   // System-triggered message (e.g., entering a page)
-  async function sendSystemMessage(content) {
+  async function sendSystemMessage(prompt) {
     try {
       if (!user?.id || !pet || !currentPage) {
         console.warn("Missing context for system message.");
         return;
       }
 
-      const reply = await generatePetReply(
-        [{ role: "system", content }],
-        user,
-        pet,
-        currentPage
-      );
+      // Call the same function the regular chat uses
+      const reply = await generatePetReply(prompt, currentPage, user.id, pet);
 
+      // Append AI reply (but no user message)
       setMessages((prev) => [...prev, { role: "assistant", text: reply }]);
     } catch (err) {
       console.error("System message failed:", err);
     }
   }
-
   return (
     <ChatContext.Provider
       value={{
