@@ -11,7 +11,7 @@ import { Profile } from "./pages/Profile.jsx";
 import { City } from "./pages/city/City.jsx";
 import { Desert } from "./pages/desert/Desert.jsx";
 import { Coast } from "./pages/coast/Coast.jsx";
-import { Pub } from "./pages/city/Pub.jsx";
+import Pub from "./pages/city/Pub.jsx";
 import ChatView from "./components/ChatView.jsx";
 
 export default function App() {
