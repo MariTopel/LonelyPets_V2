@@ -90,7 +90,7 @@ export function City() {
           top: "5%",
           left: "25%",
           width: "27%",
-          height: "43%",
+          height: "45%",
         }}
       >
         <span style={styles.srOnly}>The Castle</span>

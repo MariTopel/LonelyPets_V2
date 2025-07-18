@@ -1,17 +1,24 @@
-// src/App.jsx
 import React, { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { ChatProvider } from "./contexts/ChatContext.jsx";
 
+// website basics
 import Header from "./components/Header.jsx";
 import AuthForm from "./components/AuthForm.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Profile } from "./pages/Profile.jsx";
+
+// city pages
 import { City } from "./pages/city/City.jsx";
+import CityLayout from "./pages/city/CityLayout.jsx";
+import Pub from "./pages/city/Pub.jsx";
+import Archery from "./pages/city/Archery.jsx";
+
+// other regions
 import { Desert } from "./pages/desert/Desert.jsx";
 import { Coast } from "./pages/coast/Coast.jsx";
-import Pub from "./pages/city/Pub.jsx";
+
 import ChatView from "./components/ChatView.jsx";
 
 export default function App() {
@@ -19,20 +26,10 @@ export default function App() {
   const [pet, setPet] = useState(undefined);
   const [authOpen, setAuthOpen] = useState(false);
 
-  // Routing location
   const location = useLocation();
 
-  // Map short routes to internal context paths for AI
-  const PAGE_REMAP = {
-    "/pub": "/city/pub",
-    "/shop": "/city/shop",
-    "/archery": "/city/archery",
-    "/castle": "/city/castle",
-    "/market": "/desert/market",
-    // Add more remaps as needed
-  };
-
-  const currentPage = PAGE_REMAP[location.pathname] || location.pathname;
+  // Optional: use full pathname directly for AI context
+  const currentPage = location.pathname;
 
   // 1) Auth initialization
   useEffect(() => {
@@ -67,7 +64,7 @@ export default function App() {
     })();
   }, [user?.id]);
 
-  // Auth controls
+  // Auth modal controls
   function openAuth() {
     setAuthOpen(true);
   }
@@ -106,7 +103,6 @@ export default function App() {
     <ChatProvider user={user} pet={pet} currentPage={currentPage}>
       <Header user={user} openAuth={openAuth} handleSignOut={handleSignOut} />
 
-      {/* Routes */}
       <Routes>
         <Route
           path="/"
@@ -120,16 +116,20 @@ export default function App() {
           }
         />
         <Route path="/profile" element={<Profile user={user} />} />
-        <Route path="/city" element={<City />} />
-        <Route path="/pub" element={<Pub />} />
         <Route path="/desert" element={<Desert />} />
         <Route path="/coast" element={<Coast />} />
+
+        {/* Nested City Routes */}
+        <Route path="/city" element={<CityLayout />}>
+          <Route index element={<City />} />
+          <Route path="pub" element={<Pub />} />
+          <Route path="archery" element={<Archery />} />
+          {/* Add more like: <Route path="shop" element={<Shop />} /> */}
+        </Route>
       </Routes>
 
-      {/* Auth Modal */}
       {authOpen && <AuthForm onSuccess={handleAuthSuccess} />}
 
-      {/* Chat */}
       {user && pet && <ChatView user={user} pet={pet} />}
       {user && pet === undefined && <div>Loading your pet…</div>}
     </ChatProvider>

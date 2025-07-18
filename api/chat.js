@@ -1,6 +1,8 @@
 // src/api/chat.js
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
+
+//data for promps import
 import { PAGE_NAMES, PAGE_DESCRIPTIONS } from "../src/config/pageData.js";
 import { PET_DETAILS } from "../src/config/petData.js";
 
@@ -33,10 +35,10 @@ export default async function handler(req, res) {
   if (!prompt || !page || !userId)
     return res.status(400).json({ error: "Missing prompt, page or userId" });
 
+  // Note: `page` must be the full route path (e.g., "/city/pub")
+  // to match PAGE_NAMES and PAGE_DESCRIPTIONS correctly.
   // derive mapId & friendly name
-  const parts = page.split("/").filter((p) => p);
-  const mapId = parts[parts.length - 1];
-  const friendly = PAGE_NAMES[mapId] || mapId;
+  const friendly = PAGE_NAMES[page] || page;
 
   // fetch full history
   const { data: chatRows, error: fetchErr } = await sb
@@ -94,7 +96,7 @@ export default async function handler(req, res) {
     ? `You are ${pet.personality}.`
     : "You are kind and curious.";
   const details = PET_DETAILS[type.toLowerCase()] || "";
-  const pageDetails = PAGE_DESCRIPTIONS[mapId] || "";
+  const pageDetails = PAGE_DESCRIPTIONS[page] || "";
 
   const SYSTEM_PROMPT = `
 You are a ${type} named ${name}.
