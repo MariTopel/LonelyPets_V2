@@ -39,7 +39,7 @@ export function City() {
 
       {/* Clickable overlay for the Archery Range */}
       <Link
-        to="/archery"
+        to="/city/archery"
         className="hotspot"
         style={{
           ...styles.hotspot,
@@ -55,7 +55,7 @@ export function City() {
       {/* Add more hotspots as needed */}
 
       <Link
-        to="/pub"
+        to="/city/pub"
         className="hotspot"
         style={{
           ...styles.hotspot,
