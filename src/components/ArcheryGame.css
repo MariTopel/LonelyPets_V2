@@ -1,0 +1,28 @@
+#archery-game {
+  /* first, set the image, size & positioning */
+  background-image: url("../assets/Archery/archery-background.png");
+  background-size: cover;
+  background-position: center;
+
+  /* then a fallback/background color */
+  background-color: #f9f7f1;
+
+  position: relative;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#archery-game svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+#archery-game span {
+  color: white;
+  font-family: sans-serif;
+  opacity: 0.3;
+}
