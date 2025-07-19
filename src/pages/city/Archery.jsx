@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import archeryImg from "../../assets/UI/city/archery.png";
 import { useChat } from "../../contexts/ChatContext";
+import ArcheryGame from "../../components/ArcheryGame";
 
 export default function Archery() {
   const { sendSystemMessage } = useChat();
@@ -20,6 +21,8 @@ export default function Archery() {
         and reflexes in friendly competitions or train to become a true
         marksman.
       </p>
+
+      <ArcheryGame />
       <ul>
         <li>Practice with magical and mundane bows.</li>
         <li>Compete in daily challenges for coin rewards.</li>

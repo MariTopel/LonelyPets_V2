@@ -24,7 +24,7 @@ export function City() {
 
       {/* Clickable overlay for the Shop */}
       <Link
-        to="/shop"
+        to="/city/shop"
         className="hotspot"
         style={{
           ...styles.hotspot,

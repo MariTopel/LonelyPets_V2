@@ -1,10 +1,13 @@
 // src/components/Header.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useCoins } from "../contexts/CoinContext";
 
 export default function Header({ user, openAuth, handleSignOut }) {
+  const { coins } = useCoins();
   return (
     <header className="site-header">
+      {user && <span>💰 {coins}</span>}
       <div className="logo">
         <Link to="/">LonelyPets</Link>
       </div>

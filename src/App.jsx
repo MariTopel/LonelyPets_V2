@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { ChatProvider } from "./contexts/ChatContext.jsx";
+import { CoinProvider } from "./contexts/CoinContext";
 
 // website basics
 import Header from "./components/Header.jsx";
@@ -14,6 +15,7 @@ import { City } from "./pages/city/City.jsx";
 import CityLayout from "./pages/city/CityLayout.jsx";
 import Pub from "./pages/city/Pub.jsx";
 import Archery from "./pages/city/Archery.jsx";
+import Shop from "./pages/city/Shop.jsx";
 
 // other regions
 import { Desert } from "./pages/desert/Desert.jsx";
@@ -101,37 +103,40 @@ export default function App() {
 
   return (
     <ChatProvider user={user} pet={pet} currentPage={currentPage}>
-      <Header user={user} openAuth={openAuth} handleSignOut={handleSignOut} />
+      <CoinProvider user={user}>
+        <Header user={user} openAuth={openAuth} handleSignOut={handleSignOut} />
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Home
-              user={user}
-              pet={pet}
-              onSave={handlePetSave}
-              openAuth={openAuth}
-            />
-          }
-        />
-        <Route path="/profile" element={<Profile user={user} />} />
-        <Route path="/desert" element={<Desert />} />
-        <Route path="/coast" element={<Coast />} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                user={user}
+                pet={pet}
+                onSave={handlePetSave}
+                openAuth={openAuth}
+              />
+            }
+          />
+          <Route path="/profile" element={<Profile user={user} />} />
+          <Route path="/desert" element={<Desert />} />
+          <Route path="/coast" element={<Coast />} />
 
-        {/* Nested City Routes */}
-        <Route path="/city" element={<CityLayout />}>
-          <Route index element={<City />} />
-          <Route path="pub" element={<Pub />} />
-          <Route path="archery" element={<Archery />} />
-          {/* Add more like: <Route path="shop" element={<Shop />} /> */}
-        </Route>
-      </Routes>
+          {/* Nested City Routes */}
+          <Route path="/city" element={<CityLayout />}>
+            <Route index element={<City />} />
+            <Route path="pub" element={<Pub />} />
+            <Route path="archery" element={<Archery />} />
+            <Route path="shop" element={<Shop />} />
+            {/* Add more like: <Route path="shop" element={<Shop />} /> */}
+          </Route>
+        </Routes>
 
-      {authOpen && <AuthForm onSuccess={handleAuthSuccess} />}
+        {authOpen && <AuthForm onSuccess={handleAuthSuccess} />}
 
-      {user && pet && <ChatView user={user} pet={pet} />}
-      {user && pet === undefined && <div>Loading your pet…</div>}
+        {user && pet && <ChatView user={user} pet={pet} />}
+        {user && pet === undefined && <div>Loading your pet…</div>}
+      </CoinProvider>
     </ChatProvider>
   );
 }
