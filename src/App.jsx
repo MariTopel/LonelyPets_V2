@@ -9,6 +9,7 @@ import Header from "./components/Header.jsx";
 import AuthForm from "./components/AuthForm.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Profile } from "./pages/Profile.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 // city pages
 import { City } from "./pages/city/City.jsx";
@@ -118,6 +119,7 @@ export default function App() {
               />
             }
           />
+          <Route path="*" element={<NotFound />} />
           <Route path="/profile" element={<Profile user={user} />} />
           <Route path="/desert" element={<Desert />} />
           <Route path="/coast" element={<Coast />} />
