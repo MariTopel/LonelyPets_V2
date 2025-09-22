@@ -17,6 +17,7 @@ export default function Header({ user, openAuth, handleSignOut }) {
         <Link to="/desert">Snake Sands</Link>
         <Link to="/coast">Eldritch Coast</Link>
         <Link to="/profile">My Profile</Link>
+        <Link to="/inventory">Inventory</Link>
       </nav>
       <div className="auth-buttons">
         {user ? (
