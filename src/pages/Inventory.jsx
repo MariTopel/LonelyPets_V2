@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useCoins } from "../contexts/CoinContext";
+import { useItemUse } from "../contexts/ItemUseContext"; //makes it so user can use items
 
 export default function Inventory() {
   //rows is the list that will be rendered. each element is one invetnory entry for this user.
@@ -172,6 +173,17 @@ export default function Inventory() {
                 <button onClick={() => decrement(row.item_id)}>-1</button>
                 <button onClick={() => deleteItem(row.item_id)}>
                   Delete All
+                </button>
+                <button
+                  onClick={() =>
+                    setSelectedItem({
+                      item_id: row.item_id,
+                      qty: row.qty,
+                      items: row.items, // { name, emoji, price, description }
+                    })
+                  }
+                >
+                  Use
                 </button>
               </div>
             </li>

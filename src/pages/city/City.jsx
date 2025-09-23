@@ -97,7 +97,7 @@ export function City() {
       </Link>
 
       <Link
-        to="/fountain"
+        to="/city/fountain"
         className="hotspot"
         style={{
           ...styles.hotspot,

@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { ChatProvider } from "./contexts/ChatContext.jsx";
 import { CoinProvider } from "./contexts/CoinContext";
+import { ItemUseProvider } from "./contexts/ItemUseContext.jsx";
 
 // website basics
 import Header from "./components/Header.jsx";
@@ -18,6 +19,7 @@ import CityLayout from "./pages/city/CityLayout.jsx";
 import Pub from "./pages/city/Pub.jsx";
 import Archery from "./pages/city/Archery.jsx";
 import Shop from "./pages/city/Shop.jsx";
+import Fountain from "./pages/city/Fountain.jsx";
 
 // other regions
 import { Desert } from "./pages/desert/Desert.jsx";
@@ -35,7 +37,7 @@ export default function App() {
   // Optional: use full pathname directly for AI context
   const currentPage = location.pathname;
 
-  // 1) Auth initialization
+  // Auth initialization
   useEffect(() => {
     async function init() {
       const {
@@ -50,7 +52,7 @@ export default function App() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // 2) Load pet
+  //  Load pet
   useEffect(() => {
     if (!user?.id) return;
     (async () => {
@@ -106,40 +108,47 @@ export default function App() {
   return (
     <ChatProvider user={user} pet={pet} currentPage={currentPage}>
       <CoinProvider user={user}>
-        <Header user={user} openAuth={openAuth} handleSignOut={handleSignOut} />
-
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                user={user}
-                pet={pet}
-                onSave={handlePetSave}
-                openAuth={openAuth}
-              />
-            }
+        <ItemUseProvider>
+          <Header
+            user={user}
+            openAuth={openAuth}
+            handleSignOut={handleSignOut}
           />
-          <Route path="*" element={<NotFound />} />
-          <Route path="/profile" element={<Profile user={user} />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/desert" element={<Desert />} />
-          <Route path="/coast" element={<Coast />} />
 
-          {/* Nested City Routes */}
-          <Route path="/city" element={<CityLayout />}>
-            <Route index element={<City />} />
-            <Route path="pub" element={<Pub />} />
-            <Route path="archery" element={<Archery />} />
-            <Route path="shop" element={<Shop />} />
-            {/* Add more like: <Route path="shop" element={<Shop />} /> */}
-          </Route>
-        </Routes>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  user={user}
+                  pet={pet}
+                  onSave={handlePetSave}
+                  openAuth={openAuth}
+                />
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+            <Route path="/profile" element={<Profile user={user} />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/desert" element={<Desert />} />
+            <Route path="/coast" element={<Coast />} />
 
-        {authOpen && <AuthForm onSuccess={handleAuthSuccess} />}
+            {/* Nested City Routes */}
+            <Route path="/city" element={<CityLayout />}>
+              <Route index element={<City />} />
+              <Route path="pub" element={<Pub />} />
+              <Route path="archery" element={<Archery />} />
+              <Route path="shop" element={<Shop />} />
+              <Route path="fountain" element={<Fountain />} />
+              {/* Add more like: <Route path="shop" element={<Shop />} /> */}
+            </Route>
+          </Routes>
 
-        {user && pet && <ChatView user={user} pet={pet} />}
-        {user && pet === undefined && <div>Loading your pet…</div>}
+          {authOpen && <AuthForm onSuccess={handleAuthSuccess} />}
+
+          {user && pet && <ChatView user={user} pet={pet} />}
+          {user && pet === undefined && <div>Loading your pet…</div>}
+        </ItemUseProvider>
       </CoinProvider>
     </ChatProvider>
   );
