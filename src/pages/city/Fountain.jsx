@@ -4,7 +4,7 @@ import { supabase } from "../../supabaseClient";
 import { useCoins } from "../../contexts/CoinContext";
 import { useChat } from "../../contexts/ChatContext";
 
-// images (you already fixed these paths)
+// images
 import fountainIdle from "../../assets/UI/city/fountain-olo-none.png";
 import fountainMale from "../../assets/UI/city/fountain-olo-man.png";
 import fountainFemale from "../../assets/UI/city/fountain-olo-woman.png";
@@ -17,7 +17,7 @@ export default function Fountain() {
   const [state, setState] = useState("idle");
   const [busy, setBusy] = useState(false);
 
-  // Local inventory for THIS page (no ItemUseContext needed)
+  // Local inventory for THIS page (no ItemUseContext)
   const [loadingInv, setLoadingInv] = useState(true);
   const [inv, setInv] = useState([]); // rows: { item_id, qty, items:{ name, emoji, price, description } }
   const [selectedItemId, setSelectedItemId] = useState(null);
