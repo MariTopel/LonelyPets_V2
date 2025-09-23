@@ -28,6 +28,12 @@ export default function Fountain() {
     female: fountainFemale,
   };
 
+  useEffect(() => {
+    sendSystemMessage(
+      "The user has arrived at the fountain. Some say that the fountain is one of the portals used by the Water diety, Olokun. Their male or female form might appear if you give the fountain the right offering!"
+    );
+  }, []);
+
   // Load the current user's inventory (with item metadata)
   useEffect(() => {
     let ignore = false;
@@ -130,18 +136,18 @@ export default function Fountain() {
         return;
       }
 
-      // 50/50 your existing outcomes (keep your rewards & text)
+      // 95% male, 5% female. math.random returns float between 0 and 1. if the rollis over 0.95 of possible valuies, male outcome. it else then the female outcome.
       const roll = Math.random();
-      if (roll < 0.5) {
+      if (roll < 0.95) {
         setState("male");
         sendSystemMessage(
-          "You sprinkle fish food into the fountain. Suddenly what looks like a man made of water appears and hands you a small gift."
+          "You sprinkle fish food into the fountain. Suddenly what looks like a man made of water appears and hands you a small gift. It is Olokun's male form. "
         );
         addCoins(5);
       } else {
         setState("female");
         sendSystemMessage(
-          "You cast the fish food upon the waters. A faint woman made of water appears before you. You feel luckier somehow. And have gained 100 coins!"
+          "You cast the fish food upon the waters. A woman made of water appears before you. You feel luckier somehow. And have gained 100 coins! The female avatar of Olokun the water Diety has blessed you."
         );
         addCoins(100);
       }
