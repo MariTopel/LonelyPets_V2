@@ -50,5 +50,3 @@ A fantasy-themed virtual pet web application where users can adopt pets, earn co
 
 ---
 
-## 📂 Project Structure
-
